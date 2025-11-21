@@ -2,19 +2,32 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Phone } from "lucide-react";
+import { Menu, X, Phone, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
 
 const navLinks = [
   { name: "Home", path: "/" },
-  { name: "Services", path: "/services" },
   { name: "About", path: "/about" },
   { name: "Service Areas", path: "/service-areas" },
   { name: "Contact", path: "/contact" },
 ];
 
+const serviceLinks = [
+  { name: "All Services", path: "/services", description: "View our complete range of pest control services" },
+  { name: "Bed Bug Control", path: "/services/bed-bug-control", description: "Specialized bed bug treatment and prevention" },
+];
+
 export const Navigation = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isServicesOpen, setIsServicesOpen] = useState(false);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -22,6 +35,7 @@ export const Navigation = () => {
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
+    setIsServicesOpen(false);
   };
 
   return (
@@ -70,6 +84,35 @@ export const Navigation = () => {
                 {link.name}
               </NavLink>
             ))}
+            
+            <NavigationMenu>
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors bg-transparent hover:bg-transparent data-[state=open]:bg-transparent">
+                    Services
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid w-[400px] gap-3 p-4">
+                      {serviceLinks.map((service) => (
+                        <li key={service.path}>
+                          <NavigationMenuLink asChild>
+                            <Link
+                              to={service.path}
+                              className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                            >
+                              <div className="text-sm font-medium leading-none">{service.name}</div>
+                              <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                                {service.description}
+                              </p>
+                            </Link>
+                          </NavigationMenuLink>
+                        </li>
+                      ))}
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
           </div>
 
           {/* Desktop CTAs */}
@@ -134,6 +177,31 @@ export const Navigation = () => {
                 {link.name}
               </NavLink>
             ))}
+            
+            {/* Services Dropdown for Mobile */}
+            <div className="border-b border-border">
+              <button
+                onClick={() => setIsServicesOpen(!isServicesOpen)}
+                className="w-full flex items-center justify-between text-base font-medium text-muted-foreground hover:text-foreground transition-colors py-2"
+              >
+                Services
+                <ChevronDown className={cn("h-4 w-4 transition-transform", isServicesOpen && "rotate-180")} />
+              </button>
+              {isServicesOpen && (
+                <div className="pl-4 pb-2 space-y-2">
+                  {serviceLinks.map((service) => (
+                    <Link
+                      key={service.path}
+                      to={service.path}
+                      onClick={closeMobileMenu}
+                      className="block text-sm text-muted-foreground hover:text-foreground transition-colors py-1"
+                    >
+                      {service.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
           </nav>
 
           <div className="mt-8 space-y-3">
