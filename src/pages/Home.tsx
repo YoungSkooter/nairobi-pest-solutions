@@ -1,256 +1,134 @@
-// pages/[page].jsx
-import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { ContactForm } from "@/components/ContactForm";
 import { ServiceCard } from "@/components/ServiceCard";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Phone,
-  Shield,
-  Leaf,
-  CheckCircle2,
-  Bug,
-  Waves,
+import { 
+  Phone, 
+  Shield, 
+  Leaf, 
+  Clock, 
+  CheckCircle2, 
+  Bug, 
+  Waves, 
   Home as HomeIcon,
-  Star,
+  Star
 } from "lucide-react";
 
-const ACF_ENDPOINT = "https://cms.killpeztsfumigation.co.ke/wp-json/acf/v3/pages/9";
+const services = [
+  {
+    icon: Waves,
+    title: "Fumigation Services",
+    description: "Complete fumigation for homes and commercial spaces using safe, eco-friendly chemicals.",
+    link: "/services",
+  },
+  {
+    icon: Bug,
+    title: "Bed Bug Control",
+    description: "Expert bed bug elimination with guaranteed results and follow-up treatments.",
+    link: "/services/bed-bug-control",
+  },
+  {
+    icon: HomeIcon,
+    title: "General Pest Control",
+    description: "Comprehensive pest management for all common household and commercial pests.",
+    link: "/services",
+  },
+];
 
-// ---------- ACF MAP ----------
-function mapAcfToUi(acf = {}) {
-  const hero = acf.hero_section || {};
-  const pest = acf.pest_services_section || {};
-  const cleaning = acf.cleaning_services_section || {};
-  const about = acf.about_section || {};
-  const process = acf.process_section || {};
-  const serviceArea = acf.service_area_section || {};
-  const testimonials = acf.testimonials_section || {};
-  const residential = acf.residential_and_commercial_services_section || {};
-  const cta = acf.cta_section || {};
+const testimonials = [
+  {
+    name: "Sarah Mwangi",
+    location: "Westlands",
+    rating: 5,
+    text: "Killpezts did an amazing job with our bed bug problem. Professional, punctual, and thorough!",
+  },
+  {
+    name: "John Kamau",
+    location: "Karen",
+    rating: 5,
+    text: "Best pest control service in Nairobi. They were fast, effective, and very affordable.",
+  },
+  {
+    name: "Grace Wanjiru",
+    location: "Kilimani",
+    rating: 5,
+    text: "Eco-friendly products that actually work! No harsh smells and the results were instant.",
+  },
+];
 
-  const badges = [
-    hero.badge_1_title && { title: hero.badge_1_title, text: hero.badge_1_text },
-    hero.badge_2_title && { title: hero.badge_2_title, text: hero.badge_2_text },
-    hero.badge_3_title && { title: hero.badge_3_title, text: hero.badge_3_text },
-  ].filter(Boolean);
+const whyChooseUs = [
+  { icon: Leaf, text: "100% Eco-friendly & Odorless" },
+  { icon: Shield, text: "Licensed & Insured" },
+  { icon: Clock, text: "24/7 Emergency Response" },
+  { icon: CheckCircle2, text: "Satisfaction Guaranteed" },
+];
 
-  const services = [];
-
-  if (pest.service_1_heading)
-    services.push({
-      title: pest.service_1_heading,
-      description: pest.service_1_subheading,
-      link: pest.service_1_button_link,
-      icon: Waves,
-    });
-
-  if (pest.service_2_heading)
-    services.push({
-      title: pest.service_2_heading,
-      description: pest.service_2_subheading,
-      link: pest.service_2_button_link,
-      icon: Bug,
-    });
-
-  if (residential.service_1_heading)
-    services.push({
-      title: residential.service_1_heading,
-      description: residential.service_1_description,
-      link: "#",
-      icon: HomeIcon,
-      image: residential.service_1_image,
-    });
-
-  if (residential.service_2_heading)
-    services.push({
-      title: residential.service_2_heading,
-      description: residential.service_2_description,
-      link: "#",
-      icon: Shield,
-      image: residential.service_2_image,
-    });
-
-  if (cleaning.service_1_heading)
-    services.push({
-      title: cleaning.service_1_heading,
-      description: cleaning.service_1_description,
-      link: cleaning.service_1_button_link,
-      icon: Leaf,
-    });
-
-  if (cleaning.service_2_heading)
-    services.push({
-      title: cleaning.service_2_heading,
-      description: cleaning.service_2_description,
-      link: cleaning.service_2_button_link,
-      icon: CheckCircle2,
-    });
-
-  const whyChooseUs = [
-    about.feature_1_heading && { icon: Leaf, text: about.feature_1_heading },
-    about.feature_2_heading && { icon: Shield, text: about.feature_2_heading },
-    about.feature_3_heading && { icon: Clock, text: about.feature_3_heading },
-    about.feature_4_heading && { icon: CheckCircle2, text: about.feature_4_heading },
-  ].filter(Boolean);
-
-  const testimonialArray = [
-    testimonials.testimonial_1_text && {
-      text: testimonials.testimonial_1_text,
-      name: testimonials.testimonial_1_name,
-      rating: 5,
-    },
-    testimonials.testimonial_2_text && {
-      text: testimonials.testimonial_2_text,
-      name: testimonials.testimonial_2_name,
-      rating: 5,
-    },
-    testimonials.testimonial_3_text && {
-      text: testimonials.testimonial_3_text,
-      name: testimonials.testimonial_3_name,
-      rating: 5,
-    },
-  ].filter(Boolean);
-
-  const serviceAreas = [
-    serviceArea.area_1_name,
-    serviceArea.area_2_name,
-    serviceArea.area_3_name,
-  ].filter(Boolean);
-
-  return {
-    hero: {
-      title: hero.hero_title,
-      subtitle: hero.hero_subtitle,
-      button1Text: hero.buton_1_text,
-      button1Link: hero.button_1_link,
-      button2Text: hero.buton_2_text,
-      button2Link: hero.button_2_link,
-      backgroundImage: hero.hero_background_image,
-      badges,
-    },
-    servicesTitle:
-      pest.services_title ||
-      cleaning.services_title ||
-      residential.residential_and_commercial_services_title ||
-      "Our Services",
-    servicesSubtitle:
-      pest.services_subtitle ||
-      cleaning.services_subtitle ||
-      "",
-    services,
-    whyChooseUs,
-    testimonials: testimonialArray,
-    about: {
-      title: about.about_title,
-      desc: about.about_description,
-      buttonText: about.about_button_text,
-      buttonLink: about.about_button_link,
-    },
-    process: {
-      heading: process.process_heading,
-      steps: [
-        process.process_1_title && {
-          title: process.process_1_title,
-          subtitle: process.process_1_subtitle,
-        },
-        process.process_2_title && {
-          title: process.process_2_title,
-          subtitle: process.process_2_subtitle,
-        },
-        process.process_3_title && {
-          title: process.process_3_title,
-          subtitle: process.process_3_subtitle,
-        },
-        process.process_4_title && {
-          title: process.process_4_title,
-          subtitle: process.process_4_subtitle,
-        },
-      ].filter(Boolean),
-    },
-    serviceAreas,
-    cta: {
-      title: cta.cta_section_title,
-      subtitle: cta.cta_section_subtitle,
-      button1Text: cta.button_1_text,
-      button1Link: cta.button_1_link,
-      button2Text: cta.button_2_text,
-      button2Link: cta.button_2_link,
-    },
-    rawAcf: acf,
-  };
-}
-
-// ---------- PAGE ----------
-export default function DynamicPage({ acf }) {
-  const ui = useMemo(() => mapAcfToUi(acf), [acf]);
-
+const Home = () => {
   return (
     <div className="min-h-screen">
-
-      {/* HERO */}
-      <section
-        className="relative bg-gradient-to-br from-primary to-primary/80 text-primary-foreground py-20 md:py-32"
-        style={{
-          backgroundImage: ui.hero.backgroundImage
-            ? `url(${ui.hero.backgroundImage})`
-            : undefined,
-          backgroundSize: "cover",
-        }}
-      >
-        <div className="container mx-auto px-4 text-center max-w-3xl">
-          <h1 className="text-5xl font-bold">{ui.hero.title}</h1>
-          <p className="text-lg mt-4">{ui.hero.subtitle}</p>
-
-          <div className="flex gap-4 justify-center mt-6 flex-col sm:flex-row">
-            <Button variant="call" size="lg" asChild>
-              <a href={ui.hero.button1Link}>
-                <Phone className="h-5 w-5" /> {ui.hero.button1Text}
-              </a>
-            </Button>
-
-            <Button variant="outline" size="lg" asChild>
-              <a href={ui.hero.button2Link}>{ui.hero.button2Text}</a>
-            </Button>
-          </div>
-
-          {ui.hero.badges?.length > 0 && (
-            <div className="flex gap-3 justify-center mt-8 flex-wrap">
-              {ui.hero.badges.map((b, i) => (
-                <div key={i} className="px-4 py-2 bg-white/10 rounded">
-                  <h4 className="font-semibold">{b.title}</h4>
-                  <p className="text-sm opacity-80">{b.text}</p>
-                </div>
-              ))}
+      {/* Hero Section */}
+      <section className="relative bg-gradient-to-br from-primary via-primary/95 to-primary/80 text-primary-foreground py-20 md:py-32">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto text-center space-y-6 animate-fade-up">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+              Professional Pest Control Services in Nairobi
+            </h1>
+            <p className="text-lg md:text-xl text-primary-foreground/90">
+              Safe, effective, and eco-friendly pest elimination for your home and business
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+              <Button variant="call" size="lg" asChild className="text-lg">
+                <a href="tel:+254700000000">
+                  <Phone className="h-5 w-5" />
+                  Call Now
+                </a>
+              </Button>
+              <Button variant="outline" size="lg" asChild className="bg-background/10 text-primary-foreground border-primary-foreground/30 hover:bg-background hover:text-foreground">
+                <a href="#quote-form">Get Free Quote</a>
+              </Button>
             </div>
-          )}
+          </div>
         </div>
       </section>
 
-      {/* SERVICES */}
-      <section className="py-20">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold">{ui.servicesTitle}</h2>
-          <p className="text-muted-foreground mt-2">{ui.servicesSubtitle}</p>
-
-          <div className="grid md:grid-cols-3 gap-8 mt-12">
-            {ui.services.map((service, i) => (
-              <ServiceCard key={i} {...service} />
+      {/* Services Preview */}
+      <section className="py-16 md:py-24 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Services</h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Comprehensive pest control solutions tailored to your needs
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+            {services.map((service, index) => (
+              <div 
+                key={service.title}
+                className="animate-fade-up"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <ServiceCard {...service} />
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* WHY CHOOSE US */}
-      <section className="py-20 bg-muted/30">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-12">Why Choose Us?</h2>
-
-          <div className="grid md:grid-cols-4 gap-6">
-            {ui.whyChooseUs.map((item, i) => (
-              <Card key={i} className="text-center">
+      {/* Why Choose Us */}
+      <section className="py-16 md:py-24 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose Killpezts?</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {whyChooseUs.map((item, index) => (
+              <Card 
+                key={item.text}
+                className="text-center hover:shadow-lg transition-shadow animate-fade-up"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
                 <CardContent className="pt-8 pb-8">
-                  <item.icon className="h-12 w-12 mx-auto text-primary mb-4" />
+                  <item.icon className="h-12 w-12 mx-auto mb-4 text-primary" />
                   <p className="font-semibold">{item.text}</p>
                 </CardContent>
               </Card>
@@ -259,22 +137,30 @@ export default function DynamicPage({ acf }) {
         </div>
       </section>
 
-      {/* TESTIMONIALS */}
-      <section className="py-20">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-12">Testimonials</h2>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {ui.testimonials.map((t, i) => (
-              <Card key={i} className="p-6">
-                <CardContent>
-                  <div className="flex gap-1 mb-4 justify-center">
-                    {[...Array(5)].map((_, i) => (
+      {/* Testimonials */}
+      <section className="py-16 md:py-24 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">What Our Clients Say</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {testimonials.map((testimonial, index) => (
+              <Card 
+                key={testimonial.name}
+                className="hover:shadow-xl transition-shadow animate-fade-up"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <CardContent className="pt-6">
+                  <div className="flex gap-1 mb-4">
+                    {[...Array(testimonial.rating)].map((_, i) => (
                       <Star key={i} className="h-5 w-5 fill-secondary text-secondary" />
                     ))}
                   </div>
-                  <p className="text-muted-foreground mb-4">"{t.text}"</p>
-                  <p className="font-semibold">{t.name}</p>
+                  <p className="text-muted-foreground mb-4">"{testimonial.text}"</p>
+                  <div>
+                    <p className="font-semibold">{testimonial.name}</p>
+                    <p className="text-sm text-muted-foreground">{testimonial.location}</p>
+                  </div>
                 </CardContent>
               </Card>
             ))}
@@ -282,62 +168,26 @@ export default function DynamicPage({ acf }) {
         </div>
       </section>
 
-      {/* QUOTE FORM */}
-      <section id="quote-form" className="py-20 bg-muted/30">
-        <div className="container mx-auto px-4 max-w-2xl">
-          <div className="text-center mb-8">
-            <h2 className="text-4xl font-bold">Get a Free Quote</h2>
+      {/* Contact Form */}
+      <section id="quote-form" className="py-16 md:py-24 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Get Your Free Quote</h2>
+              <p className="text-muted-foreground text-lg">
+                Fill out the form and we'll get back to you within 24 hours
+              </p>
+            </div>
+            <Card>
+              <CardContent className="pt-6">
+                <ContactForm />
+              </CardContent>
+            </Card>
           </div>
-
-          <Card>
-            <CardContent className="pt-6">
-              <ContactForm />
-            </CardContent>
-          </Card>
         </div>
       </section>
-
-      {/* CTA */}
-      {ui.cta?.title && (
-        <section className="py-16 bg-primary text-primary-foreground text-center">
-          <h3 className="text-3xl font-bold">{ui.cta.title}</h3>
-          <p className="mt-2">{ui.cta.subtitle}</p>
-
-          <div className="mt-6 flex gap-3 justify-center">
-            {ui.cta.button1Text && (
-              <Button asChild>
-                <a href={ui.cta.button1Link}>{ui.cta.button1Text}</a>
-              </Button>
-            )}
-
-            {ui.cta.button2Text && (
-              <Button variant="outline" asChild>
-                <a href={ui.cta.button2Link}>{ui.cta.button2Text}</a>
-              </Button>
-            )}
-          </div>
-        </section>
-      )}
     </div>
   );
-}
+};
 
-// ---------- BUILD-TIME FETCH ----------
-export async function getStaticProps() {
-  try {
-    const res = await fetch(ACF_ENDPOINT);
-    const json = await res.json();
-
-    return {
-      props: {
-        acf: json.acf || {},
-      },
-      revalidate: 60,
-    };
-  } catch {
-    return {
-      props: { acf: {} },
-      revalidate: 60,
-    };
-  }
-}
+export default Home;
