@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ContactForm } from "@/components/ContactForm";
 import { ServiceCard } from "@/components/ServiceCard";
@@ -26,17 +26,42 @@ const iconMap = {
   HomeIcon,
 };
 
-async function getACF() {
-  const WP_URL = "https://cms.killpeztsfumigation.co.ke/wp-json/acf/v3/pages/9";
-  const PAGE_ID = "9"; // homepage ACF group was bound to page ID 9 in export
+export default function Home() {
+  const [acf, setAcf] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  const res = await fetch(`${WP_URL}${PAGE_ID}`);
-  const data = await res.json();
-  return data.acf;
-}
+  useEffect(() => {
+    const fetchACF = async () => {
+      try {
+        const WP_URL = "https://cms.killpeztsfumigation.co.ke/wp-json/acf/v3/pages/9";
+        const res = await fetch(WP_URL);
+        const data = await res.json();
+        setAcf(data.acf);
+      } catch (error) {
+        console.error("Failed to fetch ACF data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-export default async function Page() {
-  const acf = await getACF();
+    fetchACF();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!acf) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-muted-foreground">Failed to load content. Please try again later.</p>
+      </div>
+    );
+  }
 
   const hero = acf.hero_section;
   const pest = acf.pest_services_section;
