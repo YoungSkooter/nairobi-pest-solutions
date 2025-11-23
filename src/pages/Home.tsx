@@ -27,7 +27,7 @@ const iconMap = {
 };
 
 async function getACF() {
-  const WP_URL = "https://yourwordpress.com/wp-json/wp/v2/pages/";
+  const WP_URL = "https://cms.killpeztsfumigation.co.ke/wp-json/acf/v3/pages/9";
   const PAGE_ID = "9"; // homepage ACF group was bound to page ID 9 in export
 
   const res = await fetch(`${WP_URL}${PAGE_ID}`);
