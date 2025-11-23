@@ -396,18 +396,27 @@ export default function Home(): JSX.Element {
       {/* CTA */}
       <section className="py-16 md:py-24 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">{cta.title ?? ""}</h2>
-          <p className="mb-6">{cta.subtitle ?? ""}</p>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">{cta.title ?? "Ready to Get Rid of Pests?"}</h2>
+          <p className="text-lg mb-8 max-w-2xl mx-auto">{cta.subtitle ?? "Contact us today for professional pest control services."}</p>
 
-          <div className="flex gap-4 justify-center">
-            {cta.button_1_link && (
-              <Button asChild>
-                <a href={cta.button_1_link}>{cta.button_1_text ?? "Get Quote"}</a>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            {(cta.button_1_text || cta.button_1_link) && (
+              <Button variant="call" size="lg" asChild>
+                <a href={cta.button_1_link || "#quote-form"}>
+                  {cta.button_1_text ?? "Schedule Free Inspection"}
+                </a>
               </Button>
             )}
-            {cta.button_2_link && (
-              <Button variant="outline" asChild>
-                <a href={cta.button_2_link}>{cta.button_2_text ?? "Learn More"}</a>
+            {(cta.button_2_text || cta.button_2_link) && (
+              <Button 
+                variant="outline" 
+                size="lg" 
+                asChild
+                className="bg-background/10 text-primary-foreground border-primary-foreground/30 hover:bg-background hover:text-foreground"
+              >
+                <a href={cta.button_2_link || "#quote-form"}>
+                  {cta.button_2_text ?? "Get a Quote"}
+                </a>
               </Button>
             )}
           </div>
